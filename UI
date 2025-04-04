@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Annota8 ERP System</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #fce3ec 0%, #ffd8b0 100%);
+      overflow-y: auto;
+    }
+    .topnav a.active {
+      font-weight: 700;
+      color: #1f2937;
+    }
+    .topnav a.active::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -2px;
+      width: 100%;
+      height: 2px;
+      background-color: #1f2937;
+    }
+    .page {
+      display: none;
+    }
+    .page.active {
+      display: block;
+    }
+    .timeline-step {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      padding: 8px 0;
+      position: relative;
+    }
+    .timeline-step::before {
+      content: '';
+      position: absolute;
+      left: 10px;
+      top: 0;
+      height: 100%;
+      width: 2px;
+      background: #e5e7eb;
+      z-index: 0;
+    }
+    .timeline-step:first-child::before {
+      top: 10px;
+    }
+    .timeline-step:last-child::before {
+      height: 10px;
+    }
+    .step-indicator {
+      position: relative;
+      z-index: 1;
+      height: 20px;
+      width: 20px;
+      border-radius: 9999px;
+      background-color: #e5e7eb;
+    }
+    .timeline-step.active .step-indicator {
+      background-color: #6366f1;
+    }
+    .timeline-step.completed .step-indicator {
+      background-color: #10b981;
+    }
+    .timeline-step .step-label {
+      font-weight: 500;
+      color: #4b5563;
+    }
+    .timeline-step.active .step-label {
+      color: #4f46e5;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body class="text-gray-800">
+  <div class="flex justify-center py-10 px-4">
+    <div class="w-full max-w-screen-2xl bg-white rounded-3xl shadow-2xl overflow-hidden">
+      <header class="topnav border-b border-gray-200">
+        <nav class="flex justify-between items-center px-8 py-4">
+          <div class="flex items-center gap-4">
+            <img src="https://i.postimg.cc/Y0C0sKTN/3fbe5cc7-0df3-44f2-8ed7-f0481f2a01cb.png" alt="Annota8 Logo" class="h-10">
+          </div>
+          <div class="nav-links flex gap-6">
+            <a onclick="navigateTo('home')" id="link-home" class="relative">Home</a>
+            <a onclick="navigateTo('create')" id="link-create" class="relative">Create New Project</a>
+            <a onclick="navigateTo('manage')" id="link-manage" class="relative">Project Management</a>
+            <a onclick="navigateTo('data')" id="link-data" class="relative">Data Management</a>
+            <a onclick="navigateTo('library')" id="link-library" class="relative">Annotation Types Library</a>
+            <a onclick="navigateTo('tools')" id="link-tools" class="relative">Tools Marketplace</a>
+            <a onclick="navigateTo('workforce')" id="link-workforce" class="relative">Workforce Marketplace</a>
+            <a onclick="navigateTo('dashboard')" id="link-dashboard" class="relative">AI Dashboard</a>
+          </div>
+        </nav>
+      </header>
+
+      <div class="flex">
+        <aside id="sidebar-timeline" class="w-72 p-6">
+          <div class="bg-white rounded-2xl shadow-lg p-6">
+            <h2 class="font-bold text-xl mb-6" id="sidebar-title">New Project Setup</h2>
+            <nav id="left-submenu" class="space-y-3 text-sm">
+              <div onclick="showStep(1)" id="step-nav-1" class="timeline-step active">
+                <div class="step-indicator"></div>
+                <div class="step-label">Choose Dataset</div>
+              </div>
+              <div onclick="showStep(2)" id="step-nav-2" class="timeline-step">
+                <div class="step-indicator"></div>
+                <div class="step-label">Choose Annotation Tool</div>
+              </div>
+              <div onclick="showStep(3)" id="step-nav-3" class="timeline-step">
+                <div class="step-indicator"></div>
+                <div class="step-label">Ontology Setup</div>
+              </div>
+              <div onclick="showStep(4)" id="step-nav-4" class="timeline-step">
+                <div class="step-indicator"></div>
+                <div class="step-label">Assign Workforce</div>
+              </div>
+              <div onclick="showStep(5)" id="step-nav-5" class="timeline-step">
+  <div class="step-indicator"></div>
+  <div class="step-label">Resource Allocation</div>
+</div>
+              <div onclick="showStep(6)" id="step-nav-6" class="timeline-step">
+                <div class="step-indicator"></div>
+                <div class="step-label">Project Dashboard</div>
+              </div>
+            </nav>
+          </div>
+        </aside>
+
+        <main class="flex-1 px-10 py-12">
+          <section id="page-home" class="page active">
+  <div class="bg-white rounded-2xl shadow-xl max-w-7xl mx-auto p-6">
+    <h1 class="text-3xl font-bold text-center mt-8 mb-6">Pipeline Performance</h1>
+    <div class="bg-white rounded-xl shadow-md p-4">
+      <div class="relative w-full h-60">
+        <svg viewBox="0 0 900 200" class="w-full h-full">
+          <defs>
+            <linearGradient id="segmentGradient" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0%" stop-color="#5eead4" stop-opacity="0.9" />
+              <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.9" />
+            </linearGradient>
+          </defs>
+          <path d="M0,100 C90,80 180,90 270,80 C360,70 450,90 540,85 C630,80 720,100 810,95 C900,90 900,90 900,90 L900,200 L0,200 Z" fill="url(#segmentGradient)" />
+          <line x1="180" y1="0" x2="180" y2="200" stroke="#e2e8f0" stroke-width="2" />
+          <line x1="360" y1="0" x2="360" y2="200" stroke="#e2e8f0" stroke-width="2" />
+          <line x1="540" y1="0" x2="540" y2="200" stroke="#e2e8f0" stroke-width="2" />
+          <line x1="720" y1="0" x2="720" y2="200" stroke="#e2e8f0" stroke-width="2" />
+          <g font-size="14" font-weight="600" fill="#000">
+            <text x="90" y="105">93,7%</text>
+            <text x="270" y="95">81,5%</text>
+            <text x="450" y="100">79,4%</text>
+            <text x="630" y="95">85,3%</text>
+            <text x="810" y="100">73,2%</text>
+          </g>
+        </svg>
+        <div class="absolute top-2 left-0 w-full flex justify-between px-4 text-center text-sm font-semibold text-gray-800">
+          <div class="w-[20%]">Planning</div>
+          <div class="w-[20%]">Annotation</div>
+          <div class="w-[20%]">Reviewing</div>
+          <div class="w-[20%]">Validation</div>
+          <div class="w-[20%]">Delivery</div>
+        </div>
+      </div>
+      <p class="text-center text-sm text-gray-700 mt-2">Overall conversion rate <strong>47,4%</strong></p>
+    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8 text-sm text-gray-800">
+      <div class="bg-gray-50 border rounded-xl p-4">
+        <h2 class="text-lg font-semibold mb-2">Planning - 🔴 Critical</h2>
+        <ul class="space-y-4 list-disc pl-5">
+          <li>
+            <strong>Unclear requirements:</strong> Frequent project changes and vague guidelines slow down planning.
+            <div class="mt-1">
+              <button class="bg-white border px-3 py-1 rounded-md text-xs hover:bg-gray-100">Chat with AI agent</button>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="bg-gray-50 border rounded-xl p-4">
+        <h2 class="text-lg font-semibold mb-2">Annotation - 🟠 High</h2>
+        <ul class="space-y-4 list-disc pl-5">
+          <li>
+            <strong>Overloaded resources:</strong> Multiple concurrent tasks on the same team create bottlenecks.
+            <div class="mt-1">
+              <button class="bg-white border px-3 py-1 rounded-md text-xs hover:bg-gray-100">Chat with AI agent</button>
+            </div>
+          </li>
+          <li>
+            <strong>High false positives:</strong> Annotators are rushing and misinterpreting unclear instructions.
+            <div class="mt-1">
+              <button class="bg-white border px-3 py-1 rounded-md text-xs hover:bg-gray-100">Chat with AI agent</button>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="bg-gray-50 border rounded-xl p-4">
+        <h2 class="text-lg font-semibold mb-2">Reviewing - 🟡 Medium</h2>
+        <ul class="space-y-4 list-disc pl-5"> 
+          <li>
+            <strong>Underutilized resources:</strong> Senior validators are overloaded while others remain idle.
+            <div class="mt-1">
+              <button class="bg-white border px-3 py-1 rounded-md text-xs hover:bg-gray-100">Chat with AI agent</button>
+            </div>
+          </li>
+          <li>
+            <strong>Lack of training:</strong> Junior validators miss edge cases and reduce delivery confidence.
+            <div class="mt-1">
+              <button class="bg-white border px-3 py-1 rounded-md text-xs hover:bg-gray-100">Chat with AI agent</button>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="bg-gray-50 border rounded-xl p-4">
+        <h2 class="text-lg font-semibold mb-2">Delivery - 🟠 High</h2>
+        <ul class="space-y-4 list-disc pl-5">
+          <li>
+            <strong>Late discovery of issues:</strong> Handoff misalignment causes delays in delivery QA.
+            <div class="mt-1">
+              <button class="bg-white border px-3 py-1 rounded-md text-xs hover:bg-gray-100">Chat with AI agent</button>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+          <section id="page-create" class="page active">
+  <div class="max-w-7xl mx-auto p-6 space-y-10">
+    
+    <!-- Step 1: Choose Dataset -->
+    <div id="step-1" class="step-content">
+      <h2 class="text-xl font-semibold mb-2">Step 1: Choose Dataset</h2>
+      <p class="text-sm text-gray-600 mb-4">Search for existing datasets or create a new one by selecting specific entities.</p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <input type="text" placeholder="Search existing datasets..." class="border rounded p-2 w-full" />
+        <button class="bg-blue-600 text-white px-4 py-2 rounded">Search</button>
+        <input type="text" placeholder="Create new dataset name..." class="border rounded p-2 w-full" />
+        <textarea placeholder="Add or paste entity list..." class="border rounded p-2 w-full h-32"></textarea>
+      </div>
+    </div>
+
+    <!-- Step 2: Select Tool -->
+    <div id="step-2" class="step-content hidden">
+  <h2 class="text-xl font-semibold mb-2">Step 2: Select Annotation Tool</h2>
+  <p class="text-sm text-gray-600 mb-4">Choose the best tool for your task with visual previews and key details.</p>
+  <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
+    <div class="border rounded-xl p-4 shadow hover:shadow-lg transition cursor-pointer">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Label_Studio_Logo.png/120px-Label_Studio_Logo.png" alt="Label Studio" class="h-12 mb-2">
+      <h3 class="text-md font-semibold">Label Studio</h3>
+      <p class="text-sm text-gray-600 mb-2">Flexible tool supporting image, video, text, audio annotation. Ideal for multi-type projects.</p>
+      <button class="bg-blue-600 text-white text-xs px-3 py-1 rounded">Select</button>
+    </div>
+    <div class="border rounded-xl p-4 shadow hover:shadow-lg transition cursor-pointer">
+      <img src="https://doccano.github.io/doccano/logo.svg" alt="Doccano" class="h-12 mb-2">
+      <h3 class="text-md font-semibold">Doccano</h3>
+      <p class="text-sm text-gray-600 mb-2">Open source tool for NLP tasks like named entity recognition, text classification, sequence labeling.</p>
+      <button class="bg-blue-600 text-white text-xs px-3 py-1 rounded">Select</button>
+    </div>
+    <div class="border rounded-xl p-4 shadow hover:shadow-lg transition cursor-pointer">
+      <img src="https://cvat.org/static/media/logo.3e50db3c.svg" alt="CVAT" class="h-12 mb-2">
+      <h3 class="text-md font-semibold">CVAT</h3>
+      <p class="text-sm text-gray-600 mb-2">Specialized for video/image annotation with bounding boxes, segmentation, interpolation.</p>
+      <button class="bg-blue-600 text-white text-xs px-3 py-1 rounded">Select</button>
+    </div>
+  </div>
+</div>
+
+    <!-- Step 3: Configure Ontology -->
+    <div id="step-3" class="step-content hidden">
+  <h2 class="text-xl font-semibold mb-2">Step 3: Configure Ontology</h2>
+  <p class="text-sm text-gray-600 mb-4">Define the labels, attributes, and relationships for annotation.</p>
+  <div class="flex gap-8">
+    <!-- Label Hierarchy -->
+    <div class="w-1/2">
+      <h3 class="text-md font-semibold mb-2">Label Hierarchy</h3>
+      <ul class="space-y-2 ml-4 text-sm">
+        <li>• Person
+          <ul class="ml-4">
+            <li>• Pedestrian</li>
+            <li>• Cyclist</li>
+          </ul>
+        </li>
+        <li>• Vehicle
+          <ul class="ml-4">
+            <li>• Car</li>
+          </ul>
+        </li>
+        <li>• Dog</li>
+      </ul>
+      <button class="mt-4 text-sm px-3 py-1 border rounded hover:bg-gray-100">+ Add Label</button>
+    </div>
+
+    <!-- JSON Schema Display -->
+    <div class="w-1/2">
+      <h3 class="text-md font-semibold mb-2">JSON Schema</h3>
+      <textarea class="border rounded p-2 w-full h-48 text-sm font-mono bg-gray-50">{
+  "labels": [
+    { "name": "Person", "children": ["Pedestrian", "Cyclist"] },
+    { "name": "Vehicle", "children": ["Car"] },
+    { "name": "Dog" }
+  ]
+}</textarea>
+      <div class="flex gap-4 mt-2">
+        <button class="bg-white border px-3 py-1 rounded text-sm hover:bg-gray-100">Suggest Ontology</button>
+        <button class="bg-black text-white px-3 py-1 rounded text-sm">Preview Tool</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- Step 4: Setup Workflow -->
+    <div id="step-4" class="step-content hidden">
+  <h2 class="text-xl font-semibold mb-2">Step 4: Setup Annotation Workflow</h2>
+  <p class="text-sm text-gray-600 mb-4">Design a customizable flow for your dataset annotation process using visual stages.</p>
+  <div class="flex gap-6">
+    <!-- Workflow Canvas -->
+    <div class="flex-1 bg-white border border-dashed rounded-xl min-h-[400px] relative p-4" id="workflow-canvas">
+  <!-- Demo Workflow Block: Dataset -->
+  <div class="workflow-block absolute bg-white border border-gray-300 rounded-lg shadow-md p-3 text-sm w-44 cursor-move" style="top: 40px; left: 30px;">
+    <div class="flex justify-between items-center mb-2">
+      <div class="flex items-center gap-2">
+        <div class="h-4 w-4 rounded-full bg-blue-400"></div>
+        <strong>Dataset</strong>
+      </div>
+      <button onclick="this.parentElement.parentElement.remove()" class="text-red-500 text-xs">✕</button>
+    </div>
+    <div class="text-xs text-gray-500 bg-gray-50 border border-dashed rounded p-1 text-center">Click to configure</div>
+    <div class="mt-2 space-y-1 text-xs">
+      <div><span class="font-semibold">Status:</span> Ready</div>
+      <div><span class="font-semibold">Assigned to:</span> None</div>
+    </div>
+  </div>
+  <!-- Demo Workflow Block: Annotate -->
+  <div class="workflow-block absolute bg-white border border-gray-300 rounded-lg shadow-md p-3 text-sm w-44 cursor-move" style="top: 40px; left: 240px;">
+    <div class="flex justify-between items-center mb-2">
+      <div class="flex items-center gap-2">
+        <div class="h-4 w-4 rounded-full bg-purple-500"></div>
+        <strong>Annotate</strong>
+      </div>
+      <button onclick="this.parentElement.parentElement.remove()" class="text-red-500 text-xs">✕</button>
+    </div>
+    <div class="text-xs text-gray-500 bg-gray-50 border border-dashed rounded p-1 text-center">Click to configure</div>
+    <div class="mt-2 space-y-1 text-xs">
+      <div><span class="font-semibold">Status:</span> In Progress</div>
+      <div><span class="font-semibold">Assigned to:</span> Team A</div>
+    </div>
+  </div>
+  <!-- Demo Workflow Block: Review -->
+  <div class="workflow-block absolute bg-white border border-gray-300 rounded-lg shadow-md p-3 text-sm w-44 cursor-move" style="top: 40px; left: 450px;">
+    <div class="flex justify-between items-center mb-2">
+      <div class="flex items-center gap-2">
+        <div class="h-4 w-4 rounded-full bg-yellow-500"></div>
+        <strong>Review</strong>
+      </div>
+      <button onclick="this.parentElement.parentElement.remove()" class="text-red-500 text-xs">✕</button>
+    </div>
+    <div class="text-xs text-gray-500 bg-gray-50 border border-dashed rounded p-1 text-center">Click to configure</div>
+    <div class="mt-2 space-y-1 text-xs">
+      <div><span class="font-semibold">Status:</span> Pending</div>
+      <div><span class="font-semibold">Assigned to:</span> Reviewer</div>
+    </div>
+  </div>
+</div>
+    <!-- Stage Toolbox -->
+    <div class="w-64">
+      <h3 class="font-semibold text-sm mb-3">Add Stages</h3>
+      <div class="space-y-2">
+        <button onclick="addWorkflowBlock('Dataset')" class="block w-full text-left px-3 py-2 bg-gray-100 rounded hover:bg-gray-200">📁 Dataset</button>
+        <button onclick="addWorkflowBlock('Annotate')" class="block w-full text-left px-3 py-2 bg-gray-100 rounded hover:bg-gray-200">✏️ Annotate</button>
+        <button onclick="addWorkflowBlock('Review')" class="block w-full text-left px-3 py-2 bg-gray-100 rounded hover:bg-gray-200">✅ Review</button>
+        <button onclick="addWorkflowBlock('Webhook')" class="block w-full text-left px-3 py-2 bg-gray-100 rounded hover:bg-gray-200">🌐 Webhook</button>
+        <button onclick="addWorkflowBlock('Export')" class="block w-full text-left px-3 py-2 bg-gray-100 rounded hover:bg-gray-200">📤 Export</button>
+        <button onclick="addWorkflowBlock('Complete')" class="block w-full text-left px-3 py-2 bg-gray-100 rounded hover:bg-gray-200">🎯 Complete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- Step 5: Resource Allocation -->
+    <div id="step-5" class="step-content hidden">
+  <h2 class="text-xl font-semibold mb-2">Step 5: Resource Allocation</h2>
+  <p class="text-sm text-gray-600 mb-4">Manage your annotation teams, define roles, track availability, and assign resources to tasks.</p>
+  <div class="grid md:grid-cols-2 gap-6">
+    <!-- Workforce Manager Section -->
+    <div class="bg-white border rounded-xl p-4">
+      <h3 class="text-lg font-semibold mb-2">Add Workforce Team</h3>
+      <input type="text" placeholder="Team Name" class="w-full border rounded p-2 mb-3" />
+      <input type="text" placeholder="Manager Email" class="w-full border rounded p-2 mb-3" />
+      <textarea placeholder="Team Skills (comma separated)" class="w-full border rounded p-2 mb-3"></textarea>
+      <button class="bg-blue-600 text-white px-4 py-2 rounded">Save Team</button>
+    </div>
+    <!-- Individual Contributor Section -->
+    <div class="bg-white border rounded-xl p-4">
+      <h3 class="text-lg font-semibold mb-2">Add Annotator</h3>
+      <input type="text" placeholder="Full Name" class="w-full border rounded p-2 mb-3" />
+      <input type="text" placeholder="Role (Annotator/Reviewer)" class="w-full border rounded p-2 mb-3" />
+      <input type="number" placeholder="Hourly Rate ($)" class="w-full border rounded p-2 mb-3" />
+      <textarea placeholder="Availability (e.g. Mon–Fri 9am–5pm)" class="w-full border rounded p-2 mb-3"></textarea>
+      <button class="bg-blue-600 text-white px-4 py-2 rounded">Add Annotator</button>
+    </div>
+  </div>
+  <div class="mt-10">
+    <h3 class="text-lg font-semibold mb-2">Current Resource Pool</h3>
+    <table class="min-w-full border text-sm">
+      <thead class="bg-gray-100">
+        <tr>
+          <th class="border px-3 py-2 text-left">Name</th>
+          <th class="border px-3 py-2 text-left">Role</th>
+          <th class="border px-3 py-2 text-left">Availability</th>
+          <th class="border px-3 py-2 text-left">Rate</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="border px-3 py-2">Jane Doe</td>
+          <td class="border px-3 py-2">Reviewer</td>
+          <td class="border px-3 py-2">Mon–Fri 10am–6pm</td>
+          <td class="border px-3 py-2">$15/hr</td>
+        </tr>
+        <tr>
+          <td class="border px-3 py-2">Ahmed Ali</td>
+          <td class="border px-3 py-2">Annotator</td>
+          <td class="border px-3 py-2">Weekends only</td>
+          <td class="border px-3 py-2">$10/hr</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+    <!-- Step 6: Annotation Guidelines -->
+    <div id="step-6" class="step-content hidden">
+      <h2 class="text-xl font-semibold mb-2">Step 6: Annotation Guidelines</h2>
+      <p class="text-sm text-gray-600 mb-4">Upload or write clear instruction documents for annotators and reviewers.</p>
+      <input type="file" class="block border p-2 rounded mb-2" />
+      <textarea class="border rounded p-2 w-full h-24" placeholder="Or paste guidelines here..."></textarea>
+    </div>
+
+    <!-- Step 7: SLA Configuration -->
+    <div id="step-7" class="step-content hidden">
+  <h2 class="text-xl font-semibold mb-2">Step 7: SLA Configuration</h2>
+  <p class="text-sm text-gray-600 mb-4">Define your SLA by breaking down the project into batches with timelines, budget, and quality goals.</p>
+
+  <!-- Global SLA Targets -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    <input type="text" class="border rounded p-2" placeholder="Total Budget ($)" />
+    <input type="text" class="border rounded p-2" placeholder="Quality Target (e.g. 95%)" />
+    <input type="text" class="border rounded p-2" placeholder="Expected Project Duration (days)" />
+  </div>
+
+  <!-- Batches Definition Table -->
+  <h3 class="text-md font-semibold mb-2">Batches Setup</h3>
+  <table class="min-w-full border text-sm mb-4">
+    <thead class="bg-gray-100">
+      <tr>
+        <th class="border px-3 py-2">Batch Name</th>
+        <th class="border px-3 py-2">Scope %</th>
+        <th class="border px-3 py-2">Start Date</th>
+        <th class="border px-3 py-2">End Date</th>
+        <th class="border px-3 py-2">Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="border px-3 py-2"><input type="text" class="w-full border rounded px-2 py-1" placeholder="Batch A" /></td>
+        <td class="border px-3 py-2"><input type="number" class="w-full border rounded px-2 py-1" placeholder="30" /></td>
+        <td class="border px-3 py-2"><input type="date" class="w-full border rounded px-2 py-1" /></td>
+        <td class="border px-3 py-2"><input type="date" class="w-full border rounded px-2 py-1" /></td>
+        <td class="border px-3 py-2"><input type="text" class="w-full border rounded px-2 py-1" placeholder="Initial launch" /></td>
+      </tr>
+      <tr>
+        <td class="border px-3 py-2"><input type="text" class="w-full border rounded px-2 py-1" placeholder="Batch B" /></td>
+        <td class="border px-3 py-2"><input type="number" class="w-full border rounded px-2 py-1" placeholder="40" /></td>
+        <td class="border px-3 py-2"><input type="date" class="w-full border rounded px-2 py-1" /></td>
+        <td class="border px-3 py-2"><input type="date" class="w-full border rounded px-2 py-1" /></td>
+        <td class="border px-3 py-2"><input type="text" class="w-full border rounded px-2 py-1" placeholder="Main phase" /></td>
+      </tr>
+      <tr>
+        <td class="border px-3 py-2"><input type="text" class="w-full border rounded px-2 py-1" placeholder="Batch C" /></td>
+        <td class="border px-3 py-2"><input type="number" class="w-full border rounded px-2 py-1" placeholder="30" /></td>
+        <td class="border px-3 py-2"><input type="date" class="w-full border rounded px-2 py-1" /></td>
+        <td class="border px-3 py-2"><input type="date" class="w-full border rounded px-2 py-1" /></td>
+        <td class="border px-3 py-2"><input type="text" class="w-full border rounded px-2 py-1" placeholder="Final delivery" /></td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="text-right">
+    <button class="bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700">Save SLA Configuration</button>
+  </div>
+</div>
+    </div>
+  </div>
+</section>
+<script>
+   function showCreateTab(tab) {
+    document.querySelectorAll('.tab-content').forEach(e => e.classList.add('hidden'));
+    document.getElementById(`create-tab-${tab}`).classList.remove('hidden');
+  }
+</script>
+          <section id="page-manage" class="page hidden"></section>
+          <section id="page-data" class="page">
+  <div class="bg-white rounded-2xl shadow-xl max-w-7xl mx-auto p-6">
+   
+<!-- Main Content beside sidebar -->
+  <div class="flex-1 px-8 py-6">
+
+    <!-- Toggle View: Dataset vs Entity -->
+<div class="flex justify-center mb-8">
+  <div class="inline-flex items-center border rounded-full bg-gray-100 p-1 text-sm">
+    <button onclick="toggleView('dataset')" id="view-dataset" class="px-4 py-1 rounded-full font-semibold bg-white shadow">Dataset View</button>
+    <button onclick="toggleView('entity')" id="view-entity" class="px-4 py-1 rounded-full text-gray-500">Entity View</button>
+  </div>
+</div>
+
+<script>
+  function toggleView(view) {
+    const datasetBtn = document.getElementById('view-dataset');
+    const entityBtn = document.getElementById('view-entity');
+    const datasetTable = document.querySelector('.overflow-x-auto');
+    const gallery = document.querySelector('.mt-12');
+
+    if (view === 'dataset') {
+      datasetBtn.classList.add('bg-white', 'shadow', 'font-semibold');
+      datasetBtn.classList.remove('text-gray-500');
+      entityBtn.classList.remove('bg-white', 'shadow', 'font-semibold');
+      entityBtn.classList.add('text-gray-500');
+      datasetTable.style.display = 'block';
+      gallery.style.display = 'none';
+    } else {
+      entityBtn.classList.add('bg-white', 'shadow', 'font-semibold');
+      entityBtn.classList.remove('text-gray-500');
+      datasetBtn.classList.remove('bg-white', 'shadow', 'font-semibold');
+      datasetBtn.classList.add('text-gray-500');
+      datasetTable.style.display = 'none';
+      gallery.style.display = 'block';
+    }
+  }
+
+  // Default view is Dataset View
+  document.addEventListener('DOMContentLoaded', () => toggleView('dataset'));
+</script>
+
+    <!-- Toolbar -->
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex gap-4">
+        <input type="text" placeholder="Search datasets..." class="border border-gray-300 rounded px-3 py-2 w-64" />
+        <select class="border border-gray-300 rounded px-3 py-2">
+          <option>All Types</option>
+          <option>Image</option>
+          <option>Text</option>
+          <option>Audio</option>
+        </select>
+      </div>
+      <button class="bg-blue-600 text-white px-4 py-2 rounded">+ New Dataset</button>
+    </div>
+
+    <!-- Dataset Table -->
+    <div class="overflow-x-auto">
+      <table class="min-w-full border text-sm text-left">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="border px-4 py-2">Name</th>
+            <th class="border px-4 py-2">Type</th>
+            <th class="border px-4 py-2">Size</th>
+            <th class="border px-4 py-2">Records</th>
+            <th class="border px-4 py-2">Version</th>
+            <th class="border px-4 py-2">Status</th>
+            <th class="border px-4 py-2">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="border px-4 py-2">Vehicles_v2</td>
+            <td class="border px-4 py-2">Image</td>
+            <td class="border px-4 py-2">24MB</td>
+            <td class="border px-4 py-2">3,000</td>
+            <td class="border px-4 py-2">v2.1</td>
+            <td class="border px-4 py-2 text-green-600">Ready</td>
+            <td class="border px-4 py-2">
+              <button class="text-blue-600 hover:underline">View</button>
+            </td>
+          </tr>
+          <tr>
+            <td class="border px-4 py-2">Chat-logs</td>
+            <td class="border px-4 py-2">Text</td>
+            <td class="border px-4 py-2">8MB</td>
+            <td class="border px-4 py-2">1,200</td>
+            <td class="border px-4 py-2">v1.0</td>
+            <td class="border px-4 py-2 text-yellow-600">Pending</td>
+            <td class="border px-4 py-2">
+              <button class="text-blue-600 hover:underline">View</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+<!-- Annotation Progress Section -->
+<div class="mt-8 px-6">
+  <h2 class="text-lg font-semibold mb-2">Annotation Progress</h2>
+  <div class="grid md:grid-cols-3 gap-4">
+    <div class="bg-white border rounded-xl p-4">
+      <p class="text-sm font-medium mb-1">Labeled</p>
+      <div class="w-full bg-gray-200 rounded-full h-3 mb-2">
+        <div class="bg-blue-600 h-3 rounded-full" style="width: 60%"></div>
+      </div>
+      <p class="text-xs text-gray-600">1,800 of 3,000 records</p>
+    </div>
+    <div class="bg-white border rounded-xl p-4">
+      <p class="text-sm font-medium mb-1">Reviewed</p>
+      <div class="w-full bg-gray-200 rounded-full h-3 mb-2">
+        <div class="bg-green-500 h-3 rounded-full" style="width: 40%"></div>
+      </div>
+      <p class="text-xs text-gray-600">1,200 of 3,000 records</p>
+    </div>
+    <div class="bg-white border rounded-xl p-4">
+      <p class="text-sm font-medium mb-1">Validated</p>
+      <div class="w-full bg-gray-200 rounded-full h-3 mb-2">
+        <div class="bg-yellow-400 h-3 rounded-full" style="width: 20%"></div>
+      </div>
+      <p class="text-xs text-gray-600">600 of 3,000 records</p>
+    </div>
+  </div>
+</div>
+<script>
+  function openUploadModal() {
+    document.getElementById('uploadModal').classList.remove('active');
+  }
+  function closeUploadModal() {
+    document.getElementById('uploadModal').classList.add('active');
+  }
+</script>
+          <section id="page-library" class="page hidden"></section>
+          <section id="page-tools" class="page hidden"></section>
+          <section id="page-data" class="page hidden"></section>
+          <section id="page-workforce" class="page hidden"></section>
+          <section id="page-dashboard" class="page hidden"></section>
+        </main>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function navigateTo(page) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      const target = document.getElementById(`page-${page}`);
+      if (target) target.classList.add('active');
+
+      document.querySelectorAll('.topnav a').forEach(link => link.classList.remove('active'));
+      const topLink = document.getElementById(`link-${page}`);
+      if (topLink) topLink.classList.add('active');
+
+      const sidebar = document.getElementById('sidebar-timeline');
+      const submenu = document.getElementById('left-submenu');
+      const title = document.getElementById('sidebar-title');
+
+      const menus = {
+        create: {
+          title: 'New Project Setup',
+          items: [
+            'Choose Dataset',
+            'Choose Annotation Tool',
+            'Ontology Setup',
+            'Assign Workforce',
+            'Assign Tasks',
+            'Project Dashboard'
+          ]
+        },
+        manage: { title: 'Project Management', items: ['A', 'B', 'C'] },
+        data: { title: 'Data Management', items: ['Filters'] },
+        library: { title: 'Annotation Library', items: ['A', 'B', 'C'] },
+        tools: { title: 'Tools Marketplace', items: ['A', 'B', 'C'] },
+        workforce: { title: 'Workforce Marketplace', items: ['A', 'B', 'C'] },
+        dashboard: { title: 'AI Dashboard', items: ['A', 'B', 'C'] }
+      };
+
+      if (menus[page]) {
+        sidebar.style.display = 'block';
+        title.textContent = menus[page].title;
+        if (page === 'create') {
+          submenu.innerHTML = `
+  <div onclick="showStep(1)" id="step-nav-1" class="timeline-step active">
+    <div class="step-indicator"></div>
+    <div class="step-label">Choose Dataset</div>
+  </div>
+  <div onclick="showStep(2)" id="step-nav-2" class="timeline-step">
+    <div class="step-indicator"></div>
+    <div class="step-label">Select Tool</div>
+  </div>
+  <div onclick="showStep(3)" id="step-nav-3" class="timeline-step">
+    <div class="step-indicator"></div>
+    <div class="step-label">Configure Ontology</div>
+  </div>
+  <div onclick="showStep(4)" id="step-nav-4" class="timeline-step">
+    <div class="step-indicator"></div>
+    <div class="step-label">Setup Workflow</div>
+  </div>
+  <div onclick="showStep(5)" id="step-nav-5" class="timeline-step">
+    <div class="step-indicator"></div>
+    <div class="step-label">Resource Allocation</div>
+  </div>
+  <div onclick="showStep(6)" id="step-nav-6" class="timeline-step">
+    <div class="step-indicator"></div>
+    <div class="step-label">Annotation Guidelines</div>
+  </div>
+  <div onclick="showStep(7)" id="step-nav-7" class="timeline-step">
+    <div class="step-indicator"></div>
+    <div class="step-label">SLA Configuration</div>
+  </div>`;
+          return;
+        }
+        submenu.innerHTML = menus[page].items.map(label => `
+          <div class='timeline-step'>
+            <div class='step-indicator'></div>
+            <div class='step-label'>${label}</div>
+          </div>`).join('');
+      } else {
+        sidebar.style.display = 'none';
+      }
+    }
+
+    function showStep(step) {
+      document.querySelectorAll('.step-content').forEach(el => el.classList.add('hidden'));
+      const currentStep = document.getElementById(`step-${step}`);
+      if (currentStep) currentStep.classList.remove('hidden');
+      document.querySelectorAll('#left-submenu .timeline-step').forEach(a => a.classList.remove('active'));
+      const currentNav = document.getElementById(`step-nav-${step}`);
+      if (currentNav) currentNav.classList.add('active');
+    }
+  </script>
+<script>
+let workflowId = 0;
+function addWorkflowBlock(type) {
+  const block = document.createElement('div');
+  block.className = 'workflow-block absolute bg-white border border-gray-300 rounded-lg shadow-md p-3 text-sm w-44 cursor-move';
+  block.style.top = `${60 + Math.random() * 100}px`;
+  block.style.left = `${60 + Math.random() * 100}px`;
+  block.innerHTML = `<div class='flex justify-between items-center'><strong>${type}</strong><button onclick="this.parentElement.parentElement.remove()" class='text-red-500 text-xs'>✕</button></div><div class='text-xs text-gray-400 mt-1'>Click to configure</div>`;
+  block.onclick = () => alert(`${type} config coming soon`);
+  makeDraggable(block);
+  document.getElementById('workflow-canvas').appendChild(block);
+}
